@@ -6,23 +6,38 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Plus, Trash2, DollarSign } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
-export interface Transaction {
+export interface MonthlyTransaction {
   id: string;
-  date: string;
-  income: number;
+  month: string; // Format: "2024-08"
+  monthName: string; // Format: "Agustus 2024"
+  salary: number;
   expenses: { label: string; amount: number }[];
   total: number;
+  carryOver: number; // Sisa dari bulan sebelumnya
 }
 
 interface FinanceFormProps {
-  onSubmit: (transaction: Transaction) => void;
+  onSubmit: (transaction: MonthlyTransaction) => void;
+  previousMonthBalance: number;
 }
 
-export const FinanceForm = ({ onSubmit }: FinanceFormProps) => {
-  const [income, setIncome] = useState("");
+export const FinanceForm = ({ onSubmit, previousMonthBalance }: FinanceFormProps) => {
+  const [salary, setSalary] = useState("");
   const [expenses, setExpenses] = useState([{ label: "", amount: "" }]);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedMonth, setSelectedMonth] = useState(() => {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
   const { toast } = useToast();
+
+  const getMonthName = (monthStr: string) => {
+    const [year, month] = monthStr.split('-');
+    const date = new Date(parseInt(year), parseInt(month) - 1);
+    return date.toLocaleDateString('id-ID', { 
+      month: 'long', 
+      year: 'numeric' 
+    });
+  };
 
   const addExpense = () => {
     setExpenses([...expenses, { label: "", amount: "" }]);
@@ -43,7 +58,7 @@ export const FinanceForm = ({ onSubmit }: FinanceFormProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    const incomeNum = parseFloat(income) || 0;
+    const salaryNum = parseFloat(salary) || 0;
     const expensesList = expenses
       .filter(exp => exp.label && exp.amount)
       .map(exp => ({
@@ -52,26 +67,28 @@ export const FinanceForm = ({ onSubmit }: FinanceFormProps) => {
       }));
 
     const totalExpenses = expensesList.reduce((sum, exp) => sum + exp.amount, 0);
-    const total = incomeNum - totalExpenses;
+    const availableAmount = salaryNum + previousMonthBalance;
+    const total = availableAmount - totalExpenses;
 
-    const transaction: Transaction = {
+    const transaction: MonthlyTransaction = {
       id: Date.now().toString(),
-      date,
-      income: incomeNum,
+      month: selectedMonth,
+      monthName: getMonthName(selectedMonth),
+      salary: salaryNum,
       expenses: expensesList,
-      total
+      total,
+      carryOver: previousMonthBalance
     };
 
     onSubmit(transaction);
     
     // Reset form
-    setIncome("");
+    setSalary("");
     setExpenses([{ label: "", amount: "" }]);
-    setDate(new Date().toISOString().split('T')[0]);
 
     toast({
-      title: "Transaksi Berhasil Ditambahkan",
-      description: `Saldo: Rp ${total.toLocaleString('id-ID')}`,
+      title: "Gaji Bulanan Berhasil Ditambahkan",
+      description: `${getMonthName(selectedMonth)} - Sisa: Rp ${total.toLocaleString('id-ID')}`,
       variant: total >= 0 ? "default" : "destructive"
     });
   };
@@ -79,36 +96,47 @@ export const FinanceForm = ({ onSubmit }: FinanceFormProps) => {
   return (
     <Card className="shadow-medium">
       <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
-        <CardTitle className="flex items-center gap-2">
-          <DollarSign className="h-5 w-5" />
-          Input Keuangan
-        </CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <DollarSign className="h-5 w-5" />
+            Input Gaji Bulanan
+          </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="date">Tanggal</Label>
+              <Label htmlFor="month">Bulan</Label>
               <Input
-                id="date"
-                type="date"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+                id="month"
+                type="month"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
                 required
               />
             </div>
             <div>
-              <Label htmlFor="income">Gaji/Pemasukan Utama (Rp)</Label>
+              <Label htmlFor="salary">Gaji Bulan {getMonthName(selectedMonth)} (Rp)</Label>
               <Input
-                id="income"
+                id="salary"
                 type="number"
                 placeholder="0"
-                value={income}
-                onChange={(e) => setIncome(e.target.value)}
+                value={salary}
+                onChange={(e) => setSalary(e.target.value)}
                 required
               />
             </div>
           </div>
+
+          {previousMonthBalance > 0 && (
+            <div className="bg-success/10 border border-success/20 rounded-lg p-4">
+              <p className="text-sm text-success">
+                💰 Sisa bulan sebelumnya: <span className="font-semibold">Rp {previousMonthBalance.toLocaleString('id-ID')}</span>
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Total yang tersedia untuk bulan ini: Rp {(parseFloat(salary) + previousMonthBalance || previousMonthBalance).toLocaleString('id-ID')}
+              </p>
+            </div>
+          )}
 
           <div>
             <div className="flex items-center justify-between mb-4">

@@ -1,14 +1,38 @@
-import { useState } from "react";
-import { FinanceForm, Transaction } from "@/components/FinanceForm";
+import { useState, useMemo } from "react";
+import { FinanceForm, MonthlyTransaction } from "@/components/FinanceForm";
 import { TransactionHistory } from "@/components/TransactionHistory";
 import { FinanceSummary } from "@/components/FinanceSummary";
 import { Wallet, BarChart3 } from "lucide-react";
 
 const Index = () => {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [transactions, setTransactions] = useState<MonthlyTransaction[]>([]);
 
-  const handleNewTransaction = (transaction: Transaction) => {
-    setTransactions(prev => [transaction, ...prev]);
+  // Calculate previous month balance (carry over from the most recent month)
+  const previousMonthBalance = useMemo(() => {
+    if (transactions.length === 0) return 0;
+    
+    // Sort transactions by month to get the most recent
+    const sortedTransactions = [...transactions].sort((a, b) => 
+      new Date(b.month + '-01').getTime() - new Date(a.month + '-01').getTime()
+    );
+    
+    return Math.max(0, sortedTransactions[0]?.total || 0);
+  }, [transactions]);
+
+  const handleNewTransaction = (transaction: MonthlyTransaction) => {
+    setTransactions(prev => {
+      // Check if transaction for this month already exists
+      const existingIndex = prev.findIndex(t => t.month === transaction.month);
+      if (existingIndex >= 0) {
+        // Update existing month
+        const updated = [...prev];
+        updated[existingIndex] = transaction;
+        return updated;
+      } else {
+        // Add new month
+        return [transaction, ...prev];
+      }
+    });
   };
 
   return (
@@ -40,7 +64,10 @@ const Index = () => {
 
         {/* Input Form */}
         <section>
-          <FinanceForm onSubmit={handleNewTransaction} />
+          <FinanceForm 
+            onSubmit={handleNewTransaction} 
+            previousMonthBalance={previousMonthBalance}
+          />
         </section>
 
         {/* Transaction History */}

@@ -1,27 +1,36 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, TrendingDown, Wallet, PieChart } from "lucide-react";
-import { Transaction } from "./FinanceForm";
+import { TrendingUp, TrendingDown, Wallet, PieChart, Coins } from "lucide-react";
+import { MonthlyTransaction } from "./FinanceForm";
 
 interface FinanceSummaryProps {
-  transactions: Transaction[];
+  transactions: MonthlyTransaction[];
 }
 
 export const FinanceSummary = ({ transactions }: FinanceSummaryProps) => {
   const summary = useMemo(() => {
-    const totalIncome = transactions.reduce((sum, t) => sum + t.income, 0);
+    const totalSalary = transactions.reduce((sum, t) => sum + t.salary, 0);
     const totalExpenses = transactions.reduce((sum, t) => 
       sum + t.expenses.reduce((expSum, exp) => expSum + exp.amount, 0), 0
     );
-    const balance = totalIncome - totalExpenses;
-    const avgIncome = transactions.length > 0 ? totalIncome / transactions.length : 0;
+    
+    // Calculate total savings from expenses labeled "Tabungan"
+    const totalSavings = transactions.reduce((sum, t) => 
+      sum + t.expenses
+        .filter(exp => exp.label.toLowerCase().includes('tabungan'))
+        .reduce((savingsSum, exp) => savingsSum + exp.amount, 0), 0
+    );
+    
+    const currentBalance = totalSalary - totalExpenses;
+    const avgSalary = transactions.length > 0 ? totalSalary / transactions.length : 0;
     const avgExpenses = transactions.length > 0 ? totalExpenses / transactions.length : 0;
 
     return {
-      totalIncome,
+      totalSalary,
       totalExpenses,
-      balance,
-      avgIncome,
+      currentBalance,
+      totalSavings,
+      avgSalary,
       avgExpenses,
       transactionCount: transactions.length
     };
@@ -29,8 +38,8 @@ export const FinanceSummary = ({ transactions }: FinanceSummaryProps) => {
 
   const cards = [
     {
-      title: "Total Pemasukan",
-      value: summary.totalIncome,
+      title: "Total Gaji",
+      value: summary.totalSalary,
       icon: TrendingUp,
       color: "text-success",
       bgColor: "bg-success/10"
@@ -43,16 +52,16 @@ export const FinanceSummary = ({ transactions }: FinanceSummaryProps) => {
       bgColor: "bg-destructive/10"
     },
     {
-      title: "Saldo",
-      value: summary.balance,
+      title: "Saldo Saat Ini",
+      value: summary.currentBalance,
       icon: Wallet,
-      color: summary.balance >= 0 ? "text-success" : "text-destructive",
-      bgColor: summary.balance >= 0 ? "bg-success/10" : "bg-destructive/10"
+      color: summary.currentBalance >= 0 ? "text-success" : "text-destructive",
+      bgColor: summary.currentBalance >= 0 ? "bg-success/10" : "bg-destructive/10"
     },
     {
-      title: "Rata-rata Pengeluaran",
-      value: summary.avgExpenses,
-      icon: PieChart,
+      title: "Total Tabungan",
+      value: summary.totalSavings,
+      icon: Coins,
       color: "text-primary",
       bgColor: "bg-primary/10"
     }
