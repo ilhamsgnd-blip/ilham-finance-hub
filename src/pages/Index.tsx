@@ -1,36 +1,42 @@
-import { useState, useMemo } from "react";
-import { FinanceForm, MonthlyTransaction } from "@/components/FinanceForm";
-import { TransactionHistory } from "@/components/TransactionHistory";
+import { useState } from "react";
+import { IncomeForm, MonthlyIncome } from "@/components/IncomeForm";
+import { ExpenseForm, MonthlyExpense } from "@/components/ExpenseForm";
+import { MonthlyBalance } from "@/components/MonthlyBalance";
 import { FinanceSummary } from "@/components/FinanceSummary";
-import { Wallet, BarChart3 } from "lucide-react";
+import { Wallet, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
 
 const Index = () => {
-  const [transactions, setTransactions] = useState<MonthlyTransaction[]>([]);
+  const [incomes, setIncomes] = useState<MonthlyIncome[]>([]);
+  const [expenses, setExpenses] = useState<MonthlyExpense[]>([]);
 
-  // Calculate previous month balance (carry over from the most recent month)
-  const previousMonthBalance = useMemo(() => {
-    if (transactions.length === 0) return 0;
-    
-    // Sort transactions by month to get the most recent
-    const sortedTransactions = [...transactions].sort((a, b) => 
-      new Date(b.month + '-01').getTime() - new Date(a.month + '-01').getTime()
-    );
-    
-    return Math.max(0, sortedTransactions[0]?.total || 0);
-  }, [transactions]);
-
-  const handleNewTransaction = (transaction: MonthlyTransaction) => {
-    setTransactions(prev => {
-      // Check if transaction for this month already exists
-      const existingIndex = prev.findIndex(t => t.month === transaction.month);
+  const handleNewIncome = (income: MonthlyIncome) => {
+    setIncomes(prev => {
+      // Check if income for this month already exists
+      const existingIndex = prev.findIndex(inc => inc.month === income.month);
       if (existingIndex >= 0) {
         // Update existing month
         const updated = [...prev];
-        updated[existingIndex] = transaction;
+        updated[existingIndex] = income;
         return updated;
       } else {
         // Add new month
-        return [transaction, ...prev];
+        return [income, ...prev];
+      }
+    });
+  };
+
+  const handleNewExpense = (expense: MonthlyExpense) => {
+    setExpenses(prev => {
+      // Check if expense for this month already exists
+      const existingIndex = prev.findIndex(exp => exp.month === expense.month);
+      if (existingIndex >= 0) {
+        // Update existing month
+        const updated = [...prev];
+        updated[existingIndex] = expense;
+        return updated;
+      } else {
+        // Add new month
+        return [expense, ...prev];
       }
     });
   };
@@ -59,20 +65,31 @@ const Index = () => {
             <BarChart3 className="h-6 w-6 text-primary" />
             <h2 className="text-2xl font-semibold">Ringkasan Keuangan</h2>
           </div>
-          <FinanceSummary transactions={transactions} />
+          <FinanceSummary incomes={incomes} expenses={expenses} />
         </section>
 
-        {/* Input Form */}
-        <section>
-          <FinanceForm 
-            onSubmit={handleNewTransaction} 
-            previousMonthBalance={previousMonthBalance}
-          />
+        {/* Input Forms */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-5 w-5 text-success" />
+              <h3 className="text-xl font-semibold">Input Pemasukan</h3>
+            </div>
+            <IncomeForm onSubmit={handleNewIncome} />
+          </div>
+          
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingDown className="h-5 w-5 text-destructive" />
+              <h3 className="text-xl font-semibold">Input Pengeluaran</h3>
+            </div>
+            <ExpenseForm onSubmit={handleNewExpense} incomes={incomes} />
+          </div>
         </section>
 
-        {/* Transaction History */}
+        {/* Monthly Balance History */}
         <section>
-          <TransactionHistory transactions={transactions} />
+          <MonthlyBalance incomes={incomes} expenses={expenses} />
         </section>
       </main>
 
