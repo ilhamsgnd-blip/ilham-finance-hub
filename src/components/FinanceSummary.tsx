@@ -1,29 +1,29 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Wallet, PieChart, Coins } from "lucide-react";
-import { MonthlyTransaction } from "./FinanceForm";
+import { MonthlyIncome } from "./IncomeForm";
+import { MonthlyExpense } from "./ExpenseForm";
 
 interface FinanceSummaryProps {
-  transactions: MonthlyTransaction[];
+  incomes: MonthlyIncome[];
+  expenses: MonthlyExpense[];
 }
 
-export const FinanceSummary = ({ transactions }: FinanceSummaryProps) => {
+export const FinanceSummary = ({ incomes, expenses }: FinanceSummaryProps) => {
   const summary = useMemo(() => {
-    const totalSalary = transactions.reduce((sum, t) => sum + t.salary, 0);
-    const totalExpenses = transactions.reduce((sum, t) => 
-      sum + t.expenses.reduce((expSum, exp) => expSum + exp.amount, 0), 0
-    );
+    const totalSalary = incomes.reduce((sum, income) => sum + income.salary, 0);
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.totalExpenses, 0);
     
     // Calculate total savings from expenses labeled "Tabungan"
-    const totalSavings = transactions.reduce((sum, t) => 
-      sum + t.expenses
+    const totalSavings = expenses.reduce((sum, expense) => 
+      sum + expense.expenses
         .filter(exp => exp.label.toLowerCase().includes('tabungan'))
         .reduce((savingsSum, exp) => savingsSum + exp.amount, 0), 0
     );
     
     const currentBalance = totalSalary - totalExpenses;
-    const avgSalary = transactions.length > 0 ? totalSalary / transactions.length : 0;
-    const avgExpenses = transactions.length > 0 ? totalExpenses / transactions.length : 0;
+    const avgSalary = incomes.length > 0 ? totalSalary / incomes.length : 0;
+    const avgExpenses = expenses.length > 0 ? totalExpenses / expenses.length : 0;
 
     return {
       totalSalary,
@@ -32,9 +32,9 @@ export const FinanceSummary = ({ transactions }: FinanceSummaryProps) => {
       totalSavings,
       avgSalary,
       avgExpenses,
-      transactionCount: transactions.length
+      transactionCount: Math.max(incomes.length, expenses.length)
     };
-  }, [transactions]);
+  }, [incomes, expenses]);
 
   const cards = [
     {
