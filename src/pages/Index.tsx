@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Wallet, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -65,7 +64,9 @@ const Index = () => {
     try {
       const newIncome = await supabaseService.createIncome({
         user_id: currentUser.id,
-        ...incomeData
+        month: incomeData.month,
+        month_name: incomeData.monthName, // ✅ mapping camelCase -> snake_case
+        salary: incomeData.salary
       });
       
       setIncomes(prev => {
@@ -100,7 +101,7 @@ const Index = () => {
       const newExpense = await supabaseService.createExpense({
         user_id: currentUser.id,
         month: expenseData.month,
-        month_name: expenseData.monthName,
+        month_name: expenseData.monthName,   // ✅ mapping
         total_expenses: expenseData.totalExpenses
       });
 
@@ -224,13 +225,13 @@ const Index = () => {
                 incomes={incomes.map(inc => ({
                   id: inc.id,
                   month: inc.month,
-                  monthName: inc.month_name,
+                  monthName: inc.month_name, // ✅ mapping snake_case -> camelCase
                   salary: inc.salary
                 }))} 
                 expenses={expenses.map(exp => ({
                   id: exp.id,
                   month: exp.month,
-                  monthName: exp.month_name,
+                  monthName: exp.month_name, // ✅ mapping
                   totalExpenses: exp.total_expenses,
                   expenses: exp.expense_items?.map(item => ({
                     label: item.label,
@@ -278,13 +279,13 @@ const Index = () => {
                   incomes={incomes.map(inc => ({
                     id: inc.id,
                     month: inc.month,
-                    monthName: inc.month_name,
+                    monthName: inc.month_name, // ✅ mapping
                     salary: inc.salary
                   }))} 
                   expenses={expenses.map(exp => ({
                     id: exp.id,
                     month: exp.month,
-                    monthName: exp.month_name,
+                    monthName: exp.month_name, // ✅ mapping
                     totalExpenses: exp.total_expenses,
                     expenses: exp.expense_items?.map(item => ({
                       label: item.label,
@@ -304,7 +305,7 @@ const Index = () => {
       <footer className="bg-card border-t mt-16">
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-muted-foreground">
-            <p>&copy; 2024 Ilham Finance Multi-User. Mengelola keuangan bersama dengan cerdas.</p>
+            <p>&copy; 2025 Ilham Finance Multi-User. Mengelola keuangan bersama dengan cerdas.</p>
           </div>
         </div>
       </footer>
