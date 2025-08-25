@@ -4,10 +4,14 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, TrendingUp, TrendingDown, Coins } from "lucide-react";
 import { MonthlyIncome } from "./IncomeForm";
 import { MonthlyExpense } from "./ExpenseForm";
+import { EditIncomeDialog } from "./EditIncomeDialog";
+import { EditExpenseDialog } from "./EditExpenseDialog";
 
 interface MonthlyBalanceProps {
   incomes: MonthlyIncome[];
   expenses: MonthlyExpense[];
+  onUpdateIncome: (income: MonthlyIncome) => void;
+  onUpdateExpense: (expense: MonthlyExpense) => void;
 }
 
 export interface MonthlyBalance {
@@ -20,7 +24,7 @@ export interface MonthlyBalance {
   expenseDetails: { label: string; amount: number }[];
 }
 
-export const MonthlyBalance = ({ incomes, expenses }: MonthlyBalanceProps) => {
+export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpense }: MonthlyBalanceProps) => {
   const monthlyBalances = useMemo(() => {
     const monthMap = new Map<string, MonthlyBalance>();
 
@@ -80,23 +84,34 @@ export const MonthlyBalance = ({ incomes, expenses }: MonthlyBalanceProps) => {
                   <div>
                     <h3 className="font-semibold text-lg">{balance.monthName}</h3>
                   </div>
-                  <Badge 
-                    variant={balance.balance >= 0 ? "default" : "destructive"}
-                    className="flex items-center gap-1"
-                  >
-                    {balance.balance >= 0 ? (
-                      <TrendingUp className="h-3 w-3" />
-                    ) : (
-                      <TrendingDown className="h-3 w-3" />
-                    )}
-                    {balance.balance >= 0 ? "Surplus" : "Defisit"}: Rp {Math.abs(balance.balance).toLocaleString('id-ID')}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge 
+                      variant={balance.balance >= 0 ? "default" : "destructive"}
+                      className="flex items-center gap-1"
+                    >
+                      {balance.balance >= 0 ? (
+                        <TrendingUp className="h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" />
+                      )}
+                      {balance.balance >= 0 ? "Surplus" : "Defisit"}: Rp {Math.abs(balance.balance).toLocaleString('id-ID')}
+                    </Badge>
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <div className="text-sm font-medium text-success mb-1">
+                    <div className="text-sm font-medium text-success mb-1 flex items-center justify-between">
                       Gaji
+                      {(() => {
+                        const income = incomes.find(inc => inc.month === balance.month);
+                        return income && (
+                          <EditIncomeDialog 
+                            income={income} 
+                            onUpdate={onUpdateIncome} 
+                          />
+                        );
+                      })()}
                     </div>
                     <div className="text-lg font-semibold text-success">
                       Rp {balance.income.toLocaleString('id-ID')}
@@ -104,8 +119,19 @@ export const MonthlyBalance = ({ incomes, expenses }: MonthlyBalanceProps) => {
                   </div>
 
                   <div>
-                    <div className="text-sm font-medium text-destructive mb-1">
+                    <div className="text-sm font-medium text-destructive mb-1 flex items-center justify-between">
                       Pengeluaran
+                      {(() => {
+                        const expense = expenses.find(exp => exp.month === balance.month);
+                        const income = incomes.find(inc => inc.month === balance.month);
+                        return expense && income && (
+                          <EditExpenseDialog 
+                            expense={expense} 
+                            onUpdate={onUpdateExpense}
+                            availableBalance={income.salary}
+                          />
+                        );
+                      })()}
                     </div>
                     {balance.expenseDetails.length === 0 ? (
                       <div className="text-sm text-muted-foreground">Tidak ada pengeluaran</div>

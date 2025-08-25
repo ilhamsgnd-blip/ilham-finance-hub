@@ -1,27 +1,61 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { IncomeForm, MonthlyIncome } from "@/components/IncomeForm";
 import { ExpenseForm, MonthlyExpense } from "@/components/ExpenseForm";
 import { MonthlyBalance } from "@/components/MonthlyBalance";
 import { FinanceSummary } from "@/components/FinanceSummary";
 import { Wallet, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
+import { storageService } from "@/lib/storage";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [incomes, setIncomes] = useState<MonthlyIncome[]>([]);
   const [expenses, setExpenses] = useState<MonthlyExpense[]>([]);
+  const { toast } = useToast();
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const savedIncomes = storageService.loadIncomes();
+    const savedExpenses = storageService.loadExpenses();
+    
+    setIncomes(savedIncomes);
+    setExpenses(savedExpenses);
+    
+    if (savedIncomes.length > 0 || savedExpenses.length > 0) {
+      toast({
+        title: "Data Dimuat",
+        description: "Data keuangan Anda telah dimuat dari penyimpanan",
+        variant: "default"
+      });
+    }
+  }, [toast]);
 
   const handleNewIncome = (income: MonthlyIncome) => {
     setIncomes(prev => {
       // Check if income for this month already exists
       const existingIndex = prev.findIndex(inc => inc.month === income.month);
+      let updated;
       if (existingIndex >= 0) {
         // Update existing month
-        const updated = [...prev];
+        updated = [...prev];
         updated[existingIndex] = income;
-        return updated;
       } else {
         // Add new month
-        return [income, ...prev];
+        updated = [income, ...prev];
       }
+      
+      // Save to localStorage
+      storageService.saveIncomes(updated);
+      return updated;
+    });
+  };
+
+  const handleUpdateIncome = (income: MonthlyIncome) => {
+    setIncomes(prev => {
+      const updated = prev.map(inc => 
+        inc.month === income.month ? income : inc
+      );
+      storageService.saveIncomes(updated);
+      return updated;
     });
   };
 
@@ -29,15 +63,29 @@ const Index = () => {
     setExpenses(prev => {
       // Check if expense for this month already exists
       const existingIndex = prev.findIndex(exp => exp.month === expense.month);
+      let updated;
       if (existingIndex >= 0) {
         // Update existing month
-        const updated = [...prev];
+        updated = [...prev];
         updated[existingIndex] = expense;
-        return updated;
       } else {
         // Add new month
-        return [expense, ...prev];
+        updated = [expense, ...prev];
       }
+      
+      // Save to localStorage
+      storageService.saveExpenses(updated);
+      return updated;
+    });
+  };
+
+  const handleUpdateExpense = (expense: MonthlyExpense) => {
+    setExpenses(prev => {
+      const updated = prev.map(exp => 
+        exp.month === expense.month ? expense : exp
+      );
+      storageService.saveExpenses(updated);
+      return updated;
     });
   };
 
@@ -89,7 +137,12 @@ const Index = () => {
 
         {/* Monthly Balance History */}
         <section>
-          <MonthlyBalance incomes={incomes} expenses={expenses} />
+          <MonthlyBalance 
+            incomes={incomes} 
+            expenses={expenses} 
+            onUpdateIncome={handleUpdateIncome}
+            onUpdateExpense={handleUpdateExpense}
+          />
         </section>
       </main>
 
