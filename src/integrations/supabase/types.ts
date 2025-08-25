@@ -14,6 +14,73 @@ export type Database = {
   }
   public: {
     Tables: {
+      expense_items: {
+        Row: {
+          amount: number
+          expense_id: string | null
+          id: string
+          label: string
+        }
+        Insert: {
+          amount?: number
+          expense_id?: string | null
+          id?: string
+          label: string
+        }
+        Update: {
+          amount?: number
+          expense_id?: string | null
+          id?: string
+          label?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expense_items_expense_id_fkey"
+            columns: ["expense_id"]
+            isOneToOne: false
+            referencedRelation: "expenses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expenses: {
+        Row: {
+          created_at: string | null
+          id: string
+          month: string
+          month_name: string
+          total_expenses: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          month: string
+          month_name: string
+          total_expenses?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          month?: string
+          month_name?: string
+          total_expenses?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       histori: {
         Row: {
           catatan: string | null
@@ -32,6 +99,62 @@ export type Database = {
           id?: number
           tanggal?: string | null
           user?: string
+        }
+        Relationships: []
+      }
+      incomes: {
+        Row: {
+          created_at: string | null
+          id: string
+          month: string
+          month_name: string
+          salary: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          month: string
+          month_name: string
+          salary?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          month?: string
+          month_name?: string
+          salary?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "incomes_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      users: {
+        Row: {
+          created_at: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          name?: string
         }
         Relationships: []
       }
