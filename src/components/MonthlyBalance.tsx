@@ -2,16 +2,17 @@ import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, TrendingUp, TrendingDown, Coins } from "lucide-react";
-import { MonthlyIncome } from "./IncomeForm";
-import { MonthlyExpense } from "./ExpenseForm";
+import { Income, Expense } from "@/services/supabaseService";
 import { EditIncomeDialog } from "./EditIncomeDialog";
 import { EditExpenseDialog } from "./EditExpenseDialog";
 
 interface MonthlyBalanceProps {
-  incomes: MonthlyIncome[];
-  expenses: MonthlyExpense[];
-  onUpdateIncome: (income: MonthlyIncome) => void;
-  onUpdateExpense: (expense: MonthlyExpense) => void;
+  incomes: Income[];
+  expenses: Expense[];
+  onUpdateIncome: (id: string, updates: Partial<Income>) => Promise<void>;
+  onUpdateExpense: (id: string, updates: Partial<Expense>, expenseItems?: Array<{ label: string; amount: number }>) => Promise<void>;
+  onDeleteIncome: (id: string) => Promise<void>;
+  onDeleteExpense: (id: string) => Promise<void>;
 }
 
 export interface MonthlyBalance {
@@ -24,7 +25,7 @@ export interface MonthlyBalance {
   expenseDetails: { label: string; amount: number }[];
 }
 
-export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpense }: MonthlyBalanceProps) => {
+export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpense, onDeleteIncome, onDeleteExpense }: MonthlyBalanceProps) => {
   const monthlyBalances = useMemo(() => {
     const monthMap = new Map<string, MonthlyBalance>();
 
@@ -32,7 +33,7 @@ export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpe
     incomes.forEach(income => {
       monthMap.set(income.month, {
         month: income.month,
-        monthName: income.monthName,
+        monthName: income.month_name,
         income: income.salary,
         totalExpenses: 0,
         balance: income.salary,
@@ -45,14 +46,14 @@ export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpe
     expenses.forEach(expense => {
       const existing = monthMap.get(expense.month);
       if (existing) {
-        const savings = expense.expenses
+        const savings = (expense.expense_items || [])
           .filter(exp => exp.label.toLowerCase().includes('tabungan'))
           .reduce((sum, exp) => sum + exp.amount, 0);
         
-        existing.totalExpenses = expense.totalExpenses;
-        existing.balance = existing.income - expense.totalExpenses;
+        existing.totalExpenses = expense.total_expenses;
+        existing.balance = existing.income - expense.total_expenses;
         existing.savings = savings;
-        existing.expenseDetails = expense.expenses;
+        existing.expenseDetails = expense.expense_items || [];
       }
     });
 
@@ -107,8 +108,14 @@ export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpe
                         const income = incomes.find(inc => inc.month === balance.month);
                         return income && (
                           <EditIncomeDialog 
-                            income={income} 
-                            onUpdate={onUpdateIncome} 
+                            income={{
+                              ...income,
+                              monthName: income.month_name
+                            }} 
+                            onUpdate={(updatedIncome) => onUpdateIncome(income.id, {
+                              salary: updatedIncome.salary,
+                              month_name: updatedIncome.monthName
+                            })}
                           />
                         );
                       })()}
@@ -126,9 +133,16 @@ export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpe
                         const income = incomes.find(inc => inc.month === balance.month);
                         return expense && income && (
                           <EditExpenseDialog 
-                            expense={expense} 
-                            onUpdate={onUpdateExpense}
-                            availableBalance={income.salary}
+                            expense={{
+                              ...expense,
+                              monthName: expense.month_name,
+                              totalExpenses: expense.total_expenses,
+                              expenses: expense.expense_items || []
+                            }} 
+                            onUpdate={(updatedExpense) => onUpdateExpense(expense.id, {
+                              month_name: updatedExpense.monthName,
+                              total_expenses: updatedExpense.totalExpenses
+                            }, updatedExpense.expenses)}
                           />
                         );
                       })()}

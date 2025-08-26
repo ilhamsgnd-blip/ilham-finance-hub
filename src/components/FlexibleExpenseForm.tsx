@@ -17,14 +17,12 @@ interface ExpenseItem {
 interface FlexibleExpenseFormProps {
   onSubmit: (expense: { 
     month: string; 
-    monthName: string; 
-    totalExpenses: number;
-    expenseItems: ExpenseItem[];
+    month_name: string; 
+    expense_items: ExpenseItem[];
   }) => Promise<void>;
-  incomes: Income[];
 }
 
-export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormProps) => {
+export const FlexibleExpenseForm = ({ onSubmit }: FlexibleExpenseFormProps) => {
   const [expenses, setExpenses] = useState<ExpenseItem[]>([{ label: '', amount: 0 }]);
   const [selectedMonth, setSelectedMonth] = useState(() => {
     const now = new Date();
@@ -102,10 +100,9 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
       const monthName = getMonthName(selectedMonth, selectedYear);
 
       await onSubmit({
-        month,
-        monthName,
-        totalExpenses,
-        expenseItems: validExpenses
+        month: month,
+        month_name: monthName,
+        expense_items: validExpenses
       });
 
       setExpenses([{ label: '', amount: 0 }]);

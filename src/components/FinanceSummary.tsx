@@ -1,22 +1,21 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp, TrendingDown, Wallet, PieChart, Coins } from "lucide-react";
-import { MonthlyIncome } from "./IncomeForm";
-import { MonthlyExpense } from "./ExpenseForm";
+import { Income, Expense } from "@/services/supabaseService";
 
 interface FinanceSummaryProps {
-  incomes: MonthlyIncome[];
-  expenses: MonthlyExpense[];
+  incomes: Income[];
+  expenses: Expense[];
 }
 
 export const FinanceSummary = ({ incomes, expenses }: FinanceSummaryProps) => {
   const summary = useMemo(() => {
     const totalSalary = incomes.reduce((sum, income) => sum + income.salary, 0);
-    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.totalExpenses, 0);
+    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.total_expenses, 0);
     
     // Calculate total savings from expenses labeled "Tabungan"
     const totalSavings = expenses.reduce((sum, expense) => 
-      sum + expense.expenses
+      sum + (expense.expense_items || [])
         .filter(exp => exp.label.toLowerCase().includes('tabungan'))
         .reduce((savingsSum, exp) => savingsSum + exp.amount, 0), 0
     );

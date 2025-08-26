@@ -1,7 +1,12 @@
-
 import { supabase } from "@/integrations/supabase/client";
 
 export interface User {
+  id: string;
+  name: string;
+  created_at?: string;
+}
+
+export interface UserProfile {
   id: string;
   name: string;
   created_at?: string;
@@ -36,11 +41,17 @@ export interface Expense {
 }
 
 export const supabaseService = {
-  // Users
-  async createUser(name: string): Promise<User> {
+  // User profile operations - now works with authenticated users
+  async createUserProfile(name: string): Promise<UserProfile> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('users')
-      .insert({ name })
+      .insert({ 
+        id: user.id,
+        name 
+      })
       .select()
       .single();
     
@@ -48,32 +59,31 @@ export const supabaseService = {
     return data;
   },
 
-  async getUsers(): Promise<User[]> {
-    const { data, error } = await supabase
-      .from('users')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
-  },
+  async getCurrentUserProfile(): Promise<UserProfile | null> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
 
-  async getUserById(id: string): Promise<User | null> {
     const { data, error } = await supabase
       .from('users')
       .select('*')
-      .eq('id', id)
+      .eq('id', user.id)
       .single();
     
-    if (error && error.code !== 'PGRST116') throw error;
+    if (error) {
+      if (error.code === 'PGRST116') return null;
+      throw error;
+    }
     return data;
   },
 
-  // Incomes
-  async createIncome(income: Omit<Income, 'id' | 'created_at' | 'updated_at'>): Promise<Income> {
+  async updateUserProfile(name: string): Promise<UserProfile> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
-      .from('incomes')
-      .insert(income)
+      .from('users')
+      .update({ name })
+      .eq('id', user.id)
       .select()
       .single();
     
@@ -81,11 +91,29 @@ export const supabaseService = {
     return data;
   },
 
-  async getIncomesByUser(userId: string): Promise<Income[]> {
+  // Income operations - now user-specific
+  async createIncome(income: Omit<Income, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Income> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
+    const { data, error } = await supabase
+      .from('incomes')
+      .insert({ ...income, user_id: user.id })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  },
+
+  async getUserIncomes(): Promise<Income[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('incomes')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .order('month', { ascending: false });
     
     if (error) throw error;
@@ -113,11 +141,14 @@ export const supabaseService = {
     if (error) throw error;
   },
 
-  // Expenses
-  async createExpense(expense: Omit<Expense, 'id' | 'created_at' | 'updated_at'>): Promise<Expense> {
+  // Expense operations - now user-specific
+  async createExpense(expense: Omit<Expense, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Expense> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('expenses')
-      .insert(expense)
+      .insert({ ...expense, user_id: user.id })
       .select()
       .single();
     
@@ -125,14 +156,17 @@ export const supabaseService = {
     return data;
   },
 
-  async getExpensesByUser(userId: string): Promise<Expense[]> {
+  async getUserExpenses(): Promise<Expense[]> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+
     const { data, error } = await supabase
       .from('expenses')
       .select(`
         *,
         expense_items (*)
       `)
-      .eq('user_id', userId)
+      .eq('user_id', user.id)
       .order('month', { ascending: false });
     
     if (error) throw error;

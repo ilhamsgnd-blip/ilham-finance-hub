@@ -9,7 +9,7 @@ import { TrendingUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface FlexibleIncomeFormProps {
-  onSubmit: (income: { month: string; monthName: string; salary: number }) => Promise<void>;
+  onSubmit: (income: { month: string; month_name: string; salary: number }) => Promise<void>;
 }
 
 export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
@@ -72,8 +72,8 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
       const monthName = getMonthName(selectedMonth, selectedYear);
 
       await onSubmit({
-        month,
-        monthName,
+        month: month,
+        month_name: monthName,
         salary: salaryNum
       });
 
