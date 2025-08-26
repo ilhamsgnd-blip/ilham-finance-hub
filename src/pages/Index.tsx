@@ -42,6 +42,9 @@ const Index = () => {
           supabaseService.getExpensesByUser(currentUser.id)
         ]);
         
+        console.log('Loaded incomes:', incomesData);
+        console.log('Loaded expenses:', expensesData);
+        
         setIncomes(incomesData);
         setExpenses(expensesData);
       } catch (error) {
@@ -69,6 +72,8 @@ const Index = () => {
         month_name: incomeData.monthName,
         salary: incomeData.salary
       });
+      
+      console.log('Created income:', newIncome);
       
       setIncomes(prev => {
         const existingIndex = prev.findIndex(inc => inc.month === newIncome.month);
@@ -106,6 +111,8 @@ const Index = () => {
         total_expenses: expenseData.totalExpenses
       });
 
+      console.log('Created expense:', newExpense);
+
       if (expenseData.expenseItems.length > 0) {
         const expenseItems = expenseData.expenseItems.map(item => ({
           expense_id: newExpense.id,
@@ -115,6 +122,7 @@ const Index = () => {
         
         const createdItems = await supabaseService.createExpenseItems(expenseItems);
         newExpense.expense_items = createdItems;
+        console.log('Created expense items:', createdItems);
       }
       
       setExpenses(prev => {
@@ -141,8 +149,23 @@ const Index = () => {
     if (!currentUser) return;
     
     try {
-      const updated = await supabaseService.updateIncome(income.id, income);
+      console.log('Updating income with data:', income);
+      
+      // Only send fields that exist in the database
+      const updateData = {
+        month_name: income.monthName,
+        salary: income.salary
+      };
+      
+      const updated = await supabaseService.updateIncome(income.id, updateData);
+      console.log('Updated income:', updated);
+      
       setIncomes(prev => prev.map(inc => inc.id === income.id ? updated : inc));
+      
+      toast({
+        title: "Yeay berhasil! 🎉",
+        description: "Gaji udah diupdate nih!",
+      });
     } catch (error) {
       console.error('Error updating income:', error);
       toast({
@@ -157,13 +180,36 @@ const Index = () => {
     if (!currentUser) return;
     
     try {
-      const updated = await supabaseService.updateExpense(expense.id, expense);
+      console.log('Updating expense with data:', expense);
       
+      // Update expense record
+      const updateData = {
+        month_name: expense.monthName,
+        total_expenses: expense.totalExpenses
+      };
+      
+      const updated = await supabaseService.updateExpense(expense.id, updateData);
+      console.log('Updated expense:', updated);
+      
+      // Update expense items if they exist
       if (expense.expenses && expense.expenses.length > 0) {
         await supabaseService.updateExpenseItems(expense.id, expense.expenses);
+        console.log('Updated expense items');
+        
+        // Reload the expense with items
+        const expensesData = await supabaseService.getExpensesByUser(currentUser.id);
+        const updatedExpenseWithItems = expensesData.find(exp => exp.id === expense.id);
+        if (updatedExpenseWithItems) {
+          updated.expense_items = updatedExpenseWithItems.expense_items;
+        }
       }
       
       setExpenses(prev => prev.map(exp => exp.id === expense.id ? updated : exp));
+      
+      toast({
+        title: "Oke sip! 🎉",
+        description: "Pengeluaran udah diupdate nih!",
+      });
     } catch (error) {
       console.error('Error updating expense:', error);
       toast({

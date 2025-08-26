@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,13 +6,20 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Edit2, TrendingUp } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MonthlyIncome } from "./IncomeForm";
+
+interface MonthlyIncome {
+  id: string;
+  month: string;
+  monthName: string;
+  salary: number;
+}
 
 interface EditIncomeDialogProps {
   income: MonthlyIncome;
@@ -43,11 +51,12 @@ export const EditIncomeDialog = ({ income, onUpdate }: EditIncomeDialogProps) =>
       monthName: getMonthName(income.month)
     };
 
+    console.log('Updating income:', updatedIncome);
     onUpdate(updatedIncome);
     setOpen(false);
     
     toast({
-      title: "Gaji Berhasil Diperbarui",
+      title: "Gaji udah diupdate! 🎉",
       description: `${getMonthName(income.month)} - Rp ${salaryNum.toLocaleString('id-ID')}`,
       variant: "default"
     });
@@ -66,6 +75,9 @@ export const EditIncomeDialog = ({ income, onUpdate }: EditIncomeDialogProps) =>
             <TrendingUp className="h-5 w-5 text-success" />
             Edit Gaji {getMonthName(income.month)}
           </DialogTitle>
+          <DialogDescription>
+            Update gaji buat bulan {getMonthName(income.month)}. Masukin jumlah yang bener ya!
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

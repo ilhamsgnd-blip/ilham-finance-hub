@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,13 +6,26 @@ import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Edit2, Plus, Trash2, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { MonthlyExpense } from "./ExpenseForm";
+
+interface ExpenseItem {
+  label: string;
+  amount: number;
+}
+
+interface MonthlyExpense {
+  id: string;
+  month: string;
+  monthName: string;
+  totalExpenses: number;
+  expenses: ExpenseItem[];
+}
 
 interface EditExpenseDialogProps {
   expense: MonthlyExpense;
@@ -75,7 +89,7 @@ export const EditExpenseDialog = ({ expense, onUpdate, availableBalance }: EditE
     setOpen(false);
     
     toast({
-      title: "Pengeluaran Berhasil Diperbarui",
+      title: "Oke sip! Pengeluaran udah diupdate nih! 🎉",
       description: `${getMonthName(expense.month)} - Sisa: Rp ${remaining.toLocaleString('id-ID')}`,
       variant: remaining >= 0 ? "default" : "destructive"
     });
@@ -99,6 +113,9 @@ export const EditExpenseDialog = ({ expense, onUpdate, availableBalance }: EditE
             <TrendingDown className="h-5 w-5 text-destructive" />
             Edit Pengeluaran {getMonthName(expense.month)}
           </DialogTitle>
+          <DialogDescription>
+            Update pengeluaran buat bulan {getMonthName(expense.month)}. Bisa ditambah atau dikurangin sesuai kebutuhan.
+          </DialogDescription>
         </DialogHeader>
         
         <div className="bg-primary/10 border border-primary/20 rounded-lg p-4 mb-4">
