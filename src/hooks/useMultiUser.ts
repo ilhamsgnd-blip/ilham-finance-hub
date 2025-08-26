@@ -29,8 +29,8 @@ export const useMultiUser = () => {
       } catch (error) {
         console.error('Error loading users:', error);
         toast({
-          title: "Error",
-          description: "Gagal memuat daftar pengguna",
+          title: "Waduh! 😅",
+          description: "Gagal memuat daftar pengguna nih",
           variant: "destructive"
         });
       } finally {
@@ -41,7 +41,7 @@ export const useMultiUser = () => {
     loadUsers();
   }, [toast]);
 
-  const createUser = async (name: string) => {
+  const createUser = async (name: string): Promise<void> => {
     try {
       const newUser = await supabaseService.createUser(name);
       setUsers(prev => [newUser, ...prev]);
@@ -49,16 +49,14 @@ export const useMultiUser = () => {
       localStorage.setItem('currentUserId', newUser.id);
       
       toast({
-        title: "Berhasil",
-        description: `Pengguna "${name}" berhasil dibuat`,
+        title: "Yeay! 🎉",
+        description: `Akun "${name}" udah jadi nih!`,
       });
-      
-      return newUser;
     } catch (error) {
       console.error('Error creating user:', error);
       toast({
-        title: "Error",
-        description: "Gagal membuat pengguna baru",
+        title: "Aduh! 😔",
+        description: "Gagal bikin akun baru nih",
         variant: "destructive"
       });
       throw error;
@@ -70,8 +68,8 @@ export const useMultiUser = () => {
     localStorage.setItem('currentUserId', user.id);
     
     toast({
-      title: "Berhasil",
-      description: `Beralih ke pengguna "${user.name}"`,
+      title: "Oke sip! 👍",
+      description: `Sekarang pakai akun "${user.name}"`,
     });
   };
 

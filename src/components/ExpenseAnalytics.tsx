@@ -46,7 +46,7 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
     
     if (topCategories.length > 0) {
       const highest = topCategories[0];
-      suggestions.push(`Kategori "${highest.label}" adalah pengeluaran terbesar Anda (Rp ${highest.amount.toLocaleString('id-ID')})`);
+      suggestions.push(`Wah, kategori "${highest.label}" paling boros nih (Rp ${highest.amount.toLocaleString('id-ID')}) 😅`);
     }
 
     if (expenses.length >= 2) {
@@ -55,16 +55,16 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
       const change = ((recent - previous) / previous) * 100;
       
       if (change > 10) {
-        suggestions.push(`Pengeluaran bulan ini naik ${change.toFixed(1)}% dari bulan lalu`);
+        suggestions.push(`Aduh! Bulan ini pengeluaran naik ${change.toFixed(1)}% dari bulan lalu 📈`);
       } else if (change < -10) {
-        suggestions.push(`Bagus! Pengeluaran turun ${Math.abs(change).toFixed(1)}% dari bulan lalu`);
+        suggestions.push(`Mantap! Pengeluaran turun ${Math.abs(change).toFixed(1)}% dari bulan lalu 👏`);
       }
     }
 
     if (avgSpending > 0) {
       const currentSpending = expenses[0]?.total_expenses || 0;
       if (currentSpending > avgSpending * 1.2) {
-        suggestions.push(`Pengeluaran bulan ini ${((currentSpending / avgSpending - 1) * 100).toFixed(1)}% di atas rata-rata`);
+        suggestions.push(`Hati-hati! Bulan ini pengeluaran ${((currentSpending / avgSpending - 1) * 100).toFixed(1)}% lebih boros dari biasanya 🚨`);
       }
     }
 
@@ -83,11 +83,11 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BarChart className="h-5 w-5" />
-            Analisis Pengeluaran
+            Analisis Pengeluaran 📊
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-muted-foreground">Belum ada data pengeluaran untuk dianalisis.</p>
+          <p className="text-muted-foreground">Belum ada data pengeluaran buat dianalisis nih 🤔</p>
         </CardContent>
       </Card>
     );
@@ -103,7 +103,7 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-primary">
               <Lightbulb className="h-5 w-5" />
-              Insight & Saran
+              Tips & Saran Buat Kamu 💡
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -124,7 +124,7 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
         {/* Top Categories Pie Chart */}
         <Card className="shadow-medium">
           <CardHeader>
-            <CardTitle>Kategori Pengeluaran Terbesar</CardTitle>
+            <CardTitle>Kategori Paling Boros 🍕</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -154,7 +154,7 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
         {/* Monthly Trend Bar Chart */}
         <Card className="shadow-medium">
           <CardHeader>
-            <CardTitle>Tren Pengeluaran Bulanan</CardTitle>
+            <CardTitle>Tren Pengeluaran Bulanan 📈</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -184,7 +184,7 @@ export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <TrendingUp className="h-5 w-5" />
-            Top 5 Kategori Pengeluaran
+            Top 5 Kategori Paling Boros 🏆
           </CardTitle>
         </CardHeader>
         <CardContent>

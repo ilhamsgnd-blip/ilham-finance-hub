@@ -42,7 +42,7 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
-    for (let year = currentYear - 5; year <= currentYear + 10; year++) {
+    for (let year = currentYear - 5; year <= currentYear + 20; year++) {
       years.push(year.toString());
     }
     return years;
@@ -59,8 +59,8 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
     const salaryNum = parseFloat(salary) || 0;
     if (salaryNum <= 0) {
       toast({
-        title: "Error",
-        description: "Gaji harus lebih dari 0",
+        title: "Eh salah nih! 😅",
+        description: "Gaji harus lebih dari 0 dong",
         variant: "destructive"
       });
       return;
@@ -77,18 +77,17 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
         salary: salaryNum
       });
 
-      // Reset form
       setSalary("");
       
       toast({
-        title: "Gaji Berhasil Ditambahkan",
-        description: `${monthName} - Rp ${salaryNum.toLocaleString('id-ID')}`,
+        title: "Mantap! 💰",
+        description: `Gaji ${monthName} udah tersimpan - Rp ${salaryNum.toLocaleString('id-ID')}`,
       });
     } catch (error) {
       console.error('Error submitting income:', error);
       toast({
-        title: "Error",
-        description: "Gagal menyimpan gaji",
+        title: "Aduh! 😔",
+        description: "Gagal nyimpen gaji nih",
         variant: "destructive"
       });
     } finally {
@@ -101,7 +100,7 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
       <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <TrendingUp className="h-5 w-5" />
-          Input Gaji Bulanan
+          Input Gaji Bulanan 💸
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -159,7 +158,7 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
             className="w-full bg-gradient-primary hover:opacity-90"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Menyimpan...' : 'Simpan Gaji'}
+            {isSubmitting ? 'Tunggu sebentar...' : 'Simpan Gaji'}
           </Button>
         </form>
       </CardContent>

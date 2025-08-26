@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Wallet, BarChart3, TrendingUp, TrendingDown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -46,8 +47,8 @@ const Index = () => {
       } catch (error) {
         console.error('Error loading user data:', error);
         toast({
-          title: "Error",
-          description: "Gagal memuat data keuangan",
+          title: "Waduh error! 😔",
+          description: "Gagal memuat data keuangan nih",
           variant: "destructive"
         });
       } finally {
@@ -65,7 +66,7 @@ const Index = () => {
       const newIncome = await supabaseService.createIncome({
         user_id: currentUser.id,
         month: incomeData.month,
-        month_name: incomeData.monthName, // ✅ mapping camelCase -> snake_case
+        month_name: incomeData.monthName,
         salary: incomeData.salary
       });
       
@@ -82,8 +83,8 @@ const Index = () => {
     } catch (error) {
       console.error('Error creating income:', error);
       toast({
-        title: "Error",
-        description: "Gagal menyimpan gaji",
+        title: "Aduh gagal! 😔",
+        description: "Gagal nyimpen gaji nih",
         variant: "destructive"
       });
     }
@@ -101,7 +102,7 @@ const Index = () => {
       const newExpense = await supabaseService.createExpense({
         user_id: currentUser.id,
         month: expenseData.month,
-        month_name: expenseData.monthName,   // ✅ mapping
+        month_name: expenseData.monthName,
         total_expenses: expenseData.totalExpenses
       });
 
@@ -129,8 +130,8 @@ const Index = () => {
     } catch (error) {
       console.error('Error creating expense:', error);
       toast({
-        title: "Error",
-        description: "Gagal menyimpan pengeluaran",
+        title: "Aduh gagal! 😔",
+        description: "Gagal nyimpen pengeluaran nih",
         variant: "destructive"
       });
     }
@@ -145,8 +146,8 @@ const Index = () => {
     } catch (error) {
       console.error('Error updating income:', error);
       toast({
-        title: "Error",
-        description: "Gagal mengupdate gaji",
+        title: "Aduh gagal! 😔",
+        description: "Gagal update gaji nih",
         variant: "destructive"
       });
     }
@@ -166,8 +167,8 @@ const Index = () => {
     } catch (error) {
       console.error('Error updating expense:', error);
       toast({
-        title: "Error",
-        description: "Gagal mengupdate pengeluaran",
+        title: "Aduh gagal! 😔",
+        description: "Gagal update pengeluaran nih",
         variant: "destructive"
       });
     }
@@ -193,10 +194,10 @@ const Index = () => {
             <div className="p-3 bg-white/20 rounded-full">
               <Wallet className="h-8 w-8" />
             </div>
-            <h1 className="text-4xl font-bold">Ilham Finance Multi-User</h1>
+            <h1 className="text-4xl font-bold">Finance Tracker Kece 💰</h1>
           </div>
           <p className="text-center text-white/90 text-lg">
-            Kelola keuangan bersama dengan mudah dan powerful
+            Atur keuangan bareng-bareng dengan mudah dan seru! 🎉
           </p>
         </div>
       </header>
@@ -219,19 +220,19 @@ const Index = () => {
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <BarChart3 className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-semibold">Ringkasan Keuangan</h2>
+                <h2 className="text-2xl font-semibold">Ringkasan Keuangan 📊</h2>
               </div>
               <FinanceSummary 
                 incomes={incomes.map(inc => ({
                   id: inc.id,
                   month: inc.month,
-                  monthName: inc.month_name, // ✅ mapping snake_case -> camelCase
+                  monthName: inc.month_name,
                   salary: inc.salary
                 }))} 
                 expenses={expenses.map(exp => ({
                   id: exp.id,
                   month: exp.month,
-                  monthName: exp.month_name, // ✅ mapping
+                  monthName: exp.month_name,
                   totalExpenses: exp.total_expenses,
                   expenses: exp.expense_items?.map(item => ({
                     label: item.label,
@@ -245,7 +246,7 @@ const Index = () => {
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <BarChart3 className="h-6 w-6 text-primary" />
-                <h2 className="text-2xl font-semibold">Analisis & Insight</h2>
+                <h2 className="text-2xl font-semibold">Analisis & Tips Kece 🔥</h2>
               </div>
               <ExpenseAnalytics expenses={expenses} />
             </section>
@@ -279,13 +280,13 @@ const Index = () => {
                   incomes={incomes.map(inc => ({
                     id: inc.id,
                     month: inc.month,
-                    monthName: inc.month_name, // ✅ mapping
+                    monthName: inc.month_name,
                     salary: inc.salary
                   }))} 
                   expenses={expenses.map(exp => ({
                     id: exp.id,
                     month: exp.month,
-                    monthName: exp.month_name, // ✅ mapping
+                    monthName: exp.month_name,
                     totalExpenses: exp.total_expenses,
                     expenses: exp.expense_items?.map(item => ({
                       label: item.label,
@@ -305,7 +306,7 @@ const Index = () => {
       <footer className="bg-card border-t mt-16">
         <div className="container mx-auto px-4 py-6">
           <div className="text-center text-muted-foreground">
-            <p>&copy; 2025 Ilham Finance Multi-User. Mengelola keuangan bersama dengan cerdas.</p>
+            <p>&copy; 2025 Finance Tracker Kece. Ngatur duit jadi mudah dan seru! 🎉</p>
           </div>
         </div>
       </footer>

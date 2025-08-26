@@ -54,7 +54,7 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
-    for (let year = currentYear - 5; year <= currentYear + 10; year++) {
+    for (let year = currentYear - 5; year <= currentYear + 20; year++) {
       years.push(year.toString());
     }
     return years;
@@ -89,8 +89,8 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
     const validExpenses = expenses.filter(exp => exp.label.trim() && exp.amount > 0);
     if (validExpenses.length === 0) {
       toast({
-        title: "Error",
-        description: "Tambahkan minimal satu pengeluaran yang valid",
+        title: "Eh tunggu! 🤔",
+        description: "Tambahin minimal satu pengeluaran yang bener dong",
         variant: "destructive"
       });
       return;
@@ -108,18 +108,17 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
         expenseItems: validExpenses
       });
 
-      // Reset form
       setExpenses([{ label: '', amount: 0 }]);
       
       toast({
-        title: "Pengeluaran Berhasil Ditambahkan",
-        description: `${monthName} - Total Rp ${totalExpenses.toLocaleString('id-ID')}`,
+        title: "Oke tersimpan! 📝",
+        description: `Pengeluaran ${monthName} - Total Rp ${totalExpenses.toLocaleString('id-ID')}`,
       });
     } catch (error) {
       console.error('Error submitting expense:', error);
       toast({
-        title: "Error",
-        description: "Gagal menyimpan pengeluaran",
+        title: "Waduh error! 😔",
+        description: "Gagal nyimpen pengeluaran nih",
         variant: "destructive"
       });
     } finally {
@@ -132,7 +131,7 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
       <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <TrendingDown className="h-5 w-5" />
-          Input Pengeluaran Bulanan
+          Input Pengeluaran Bulanan 💳
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
@@ -190,7 +189,7 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
                 <div>
                   <Label>Kategori</Label>
                   <Input
-                    placeholder="Contoh: Makanan, Transport..."
+                    placeholder="Contoh: Makan, Transport, dll..."
                     value={expense.label}
                     onChange={(e) => updateExpenseItem(index, 'label', e.target.value)}
                   />
@@ -232,7 +231,7 @@ export const FlexibleExpenseForm = ({ onSubmit, incomes }: FlexibleExpenseFormPr
             className="w-full bg-gradient-primary hover:opacity-90"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'Menyimpan...' : 'Simpan Pengeluaran'}
+            {isSubmitting ? 'Tunggu sebentar...' : 'Simpan Pengeluaran'}
           </Button>
         </form>
       </CardContent>

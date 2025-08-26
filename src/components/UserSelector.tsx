@@ -50,20 +50,20 @@ export const UserSelector = ({
         <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Pilih atau Buat Pengguna
+            Pilih atau Bikin Akun Dulu Yuk! 😊
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="space-y-4">
             {users.length > 0 && (
               <div>
-                <Label>Pilih Pengguna Existing</Label>
+                <Label>Pilih Akun yang Udah Ada</Label>
                 <Select onValueChange={(userId) => {
                   const user = users.find(u => u.id === userId);
                   if (user) onSwitchUser(user);
                 }}>
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Pilih pengguna..." />
+                    <SelectValue placeholder="Pilih akun..." />
                   </SelectTrigger>
                   <SelectContent>
                     {users.map(user => (
@@ -81,21 +81,21 @@ export const UserSelector = ({
                 <DialogTrigger asChild>
                   <Button className="w-full bg-gradient-primary hover:opacity-90">
                     <Plus className="h-4 w-4 mr-2" />
-                    Buat Pengguna Baru
+                    Bikin Akun Baru
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Buat Pengguna Baru</DialogTitle>
+                    <DialogTitle>Bikin Akun Baru Yuk! 🎉</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleCreateUser} className="space-y-4">
                     <div>
-                      <Label htmlFor="userName">Nama Pengguna</Label>
+                      <Label htmlFor="userName">Nama Kamu</Label>
                       <Input
                         id="userName"
                         value={newUserName}
                         onChange={(e) => setNewUserName(e.target.value)}
-                        placeholder="Masukkan nama..."
+                        placeholder="Tulis nama kamu..."
                         required
                       />
                     </div>
@@ -104,7 +104,7 @@ export const UserSelector = ({
                       className="w-full" 
                       disabled={isCreating || !newUserName.trim()}
                     >
-                      {isCreating ? 'Membuat...' : 'Buat Pengguna'}
+                      {isCreating ? 'Bentar ya...' : 'Gas Bikin!'}
                     </Button>
                   </form>
                 </DialogContent>
@@ -123,8 +123,8 @@ export const UserSelector = ({
           <User className="h-5 w-5" />
         </div>
         <div>
-          <p className="font-medium">Pengguna Aktif:</p>
-          <p className="text-lg font-bold">{currentUser.name}</p>
+          <p className="font-medium">Halo!</p>
+          <p className="text-lg font-bold">{currentUser.name} 👋</p>
         </div>
       </div>
       <Button 
@@ -132,7 +132,7 @@ export const UserSelector = ({
         onClick={onClearUser}
         className="bg-white/10 border-white/20 text-white hover:bg-white/20"
       >
-        Ganti Pengguna
+        Ganti Akun
       </Button>
     </div>
   );
