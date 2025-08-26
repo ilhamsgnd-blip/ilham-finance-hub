@@ -81,27 +81,6 @@ export type Database = {
           },
         ]
       }
-      histori: {
-        Row: {
-          catatan: string | null
-          id: number
-          tanggal: string | null
-          user: string
-        }
-        Insert: {
-          catatan?: string | null
-          id?: number
-          tanggal?: string | null
-          user: string
-        }
-        Update: {
-          catatan?: string | null
-          id?: number
-          tanggal?: string | null
-          user?: string
-        }
-        Relationships: []
-      }
       incomes: {
         Row: {
           created_at: string | null
