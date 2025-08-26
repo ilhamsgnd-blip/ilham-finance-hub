@@ -94,6 +94,15 @@ export const FlexibleExpenseForm = ({ onSubmit }: FlexibleExpenseFormProps) => {
       return;
     }
 
+    if (!selectedMonth || !selectedYear) {
+      toast({
+        title: "Eh tunggu! 🤔",
+        description: "Bulan dan tahun harus dipilih ya",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const month = `${selectedYear}-${selectedMonth}`;

@@ -75,6 +75,15 @@ export const EditExpenseDialog = ({ expense, onUpdate, availableBalance }: EditE
         amount: parseFloat(exp.amount) || 0
       }));
 
+    if (expensesList.length === 0) {
+      toast({
+        title: "Eh tunggu! 🤔",
+        description: "Minimal satu pengeluaran harus diisi ya",
+        variant: "destructive"
+      });
+      return;
+    }
+
     const totalExpenses = expensesList.reduce((sum, exp) => sum + exp.amount, 0);
     const remaining = availableBalance - totalExpenses;
 

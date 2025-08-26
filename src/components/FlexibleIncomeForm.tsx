@@ -57,10 +57,19 @@ export const FlexibleIncomeForm = ({ onSubmit }: FlexibleIncomeFormProps) => {
     e.preventDefault();
     
     const salaryNum = parseFloat(salary) || 0;
-    if (salaryNum <= 0) {
+    if (!salary || salaryNum <= 0) {
       toast({
         title: "Eh salah nih! 😅",
-        description: "Gaji harus lebih dari 0 dong",
+        description: "Gaji harus diisi dan lebih dari 0 dong",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!selectedMonth || !selectedYear) {
+      toast({
+        title: "Eh tunggu! 🤔",
+        description: "Bulan dan tahun harus dipilih ya",
         variant: "destructive"
       });
       return;

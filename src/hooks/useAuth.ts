@@ -30,6 +30,15 @@ export const useAuth = () => {
   }, []);
 
   const signUp = async (email: string, password: string, name: string) => {
+    if (!email || !password || !name) {
+      toast({
+        title: "Waduh! 😅",
+        description: "Semua field harus diisi ya!",
+        variant: "destructive"
+      });
+      return { error: new Error('All fields are required') };
+    }
+
     const redirectUrl = `${window.location.origin}/`;
     
     const { error } = await supabase.auth.signUp({
@@ -63,6 +72,15 @@ export const useAuth = () => {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!email || !password) {
+      toast({
+        title: "Ups! 😔",
+        description: "Email dan password harus diisi!",
+        variant: "destructive"
+      });
+      return { error: new Error('Email and password are required') };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,

@@ -77,8 +77,8 @@ export const supabaseService = {
   },
 
   async updateUserProfile(name: string): Promise<UserProfile> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
       .from('users')
@@ -93,8 +93,8 @@ export const supabaseService = {
 
   // Income operations - now user-specific
   async createIncome(income: Omit<Income, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Income> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
       .from('incomes')
@@ -107,8 +107,8 @@ export const supabaseService = {
   },
 
   async getUserIncomes(): Promise<Income[]> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
       .from('incomes')
@@ -143,8 +143,8 @@ export const supabaseService = {
 
   // Expense operations - now user-specific
   async createExpense(expense: Omit<Expense, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Expense> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
       .from('expenses')
@@ -157,8 +157,8 @@ export const supabaseService = {
   },
 
   async getUserExpenses(): Promise<Expense[]> {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) throw new Error('User not authenticated');
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) throw new Error('User not authenticated');
 
     const { data, error } = await supabase
       .from('expenses')

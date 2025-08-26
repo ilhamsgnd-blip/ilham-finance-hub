@@ -10,19 +10,29 @@ interface FinanceSummaryProps {
 
 export const FinanceSummary = ({ incomes, expenses }: FinanceSummaryProps) => {
   const summary = useMemo(() => {
-    const totalSalary = incomes.reduce((sum, income) => sum + income.salary, 0);
-    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.total_expenses, 0);
+    const safeIncomes = incomes || [];
+    const safeExpenses = expenses || [];
+    
+    const totalSalary = safeIncomes.reduce((sum, income) => {
+      return sum + (typeof income.salary === 'number' ? income.salary : 0);
+    }, 0);
+    
+    const totalExpenses = safeExpenses.reduce((sum, expense) => {
+      return sum + (typeof expense.total_expenses === 'number' ? expense.total_expenses : 0);
+    }, 0);
     
     // Calculate total savings from expenses labeled "Tabungan"
-    const totalSavings = expenses.reduce((sum, expense) => 
-      sum + (expense.expense_items || [])
-        .filter(exp => exp.label.toLowerCase().includes('tabungan'))
-        .reduce((savingsSum, exp) => savingsSum + exp.amount, 0), 0
+    const totalSavings = safeExpenses.reduce((sum, expense) => {
+      const expenseItems = expense.expense_items || [];
+      return sum + expenseItems
+        .filter(exp => exp.label && exp.label.toLowerCase().includes('tabungan'))
+        .reduce((savingsSum, exp) => savingsSum + (typeof exp.amount === 'number' ? exp.amount : 0), 0);
+    }, 0
     );
     
     const currentBalance = totalSalary - totalExpenses;
-    const avgSalary = incomes.length > 0 ? totalSalary / incomes.length : 0;
-    const avgExpenses = expenses.length > 0 ? totalExpenses / expenses.length : 0;
+    const avgSalary = safeIncomes.length > 0 ? totalSalary / safeIncomes.length : 0;
+    const avgExpenses = safeExpenses.length > 0 ? totalExpenses / safeExpenses.length : 0;
 
     return {
       totalSalary,
@@ -31,7 +41,7 @@ export const FinanceSummary = ({ incomes, expenses }: FinanceSummaryProps) => {
       totalSavings,
       avgSalary,
       avgExpenses,
-      transactionCount: Math.max(incomes.length, expenses.length)
+      transactionCount: Math.max(safeIncomes.length, safeExpenses.length)
     };
   }, [incomes, expenses]);
 

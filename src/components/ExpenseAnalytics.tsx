@@ -11,16 +11,24 @@ interface ExpenseAnalyticsProps {
 
 export const ExpenseAnalytics = ({ expenses }: ExpenseAnalyticsProps) => {
   const analytics = useMemo(() => {
-    if (expenses.length === 0) return null;
+    if (!expenses || expenses.length === 0) return null;
 
     // Aggregate expense categories
     const categoryTotals: { [key: string]: number } = {};
     const monthlyTotals: { [key: string]: number } = {};
 
     expenses.forEach(expense => {
+      if (!expense.month_name || typeof expense.total_expenses !== 'number') {
+        return; // Skip invalid expense data
+      }
+      
       monthlyTotals[expense.month_name] = expense.total_expenses;
       
-      expense.expense_items?.forEach(item => {
+      const expenseItems = expense.expense_items || [];
+      expenseItems.forEach(item => {
+        if (!item.label || typeof item.amount !== 'number') {
+          return; // Skip invalid item data
+        }
         categoryTotals[item.label] = (categoryTotals[item.label] || 0) + item.amount;
       });
     });

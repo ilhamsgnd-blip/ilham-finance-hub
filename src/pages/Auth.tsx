@@ -29,11 +29,19 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (isLoading) return; // Prevent double submission
+    
     setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    
+    if (!email || !password) {
+      setIsLoading(false);
+      return;
+    }
     
     await signIn(email, password);
     setIsLoading(false);
@@ -41,12 +49,20 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (isLoading) return; // Prevent double submission
+    
     setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
+    
+    if (!email || !password || !name) {
+      setIsLoading(false);
+      return;
+    }
     
     await signUp(email, password, name);
     setIsLoading(false);

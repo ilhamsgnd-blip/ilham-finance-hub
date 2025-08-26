@@ -37,17 +37,21 @@ export const useUserProfile = () => {
   }, [user, isAuthenticated, toast]);
 
   const createProfile = async (name: string): Promise<void> => {
+    if (!name || !name.trim()) {
+      throw new Error('Name is required');
+    }
+    
     if (!isAuthenticated) {
       throw new Error('User not authenticated');
     }
 
     try {
-      const newProfile = await supabaseService.createUserProfile(name);
+      const newProfile = await supabaseService.createUserProfile(name.trim());
       setProfile(newProfile);
       
       toast({
         title: "Yeay! 🎉",
-        description: `Profil "${name}" berhasil dibuat!`,
+        description: `Profil "${name.trim()}" berhasil dibuat!`,
       });
     } catch (error) {
       console.error('Error creating user profile:', error);
@@ -61,17 +65,21 @@ export const useUserProfile = () => {
   };
 
   const updateProfile = async (name: string): Promise<void> => {
+    if (!name || !name.trim()) {
+      throw new Error('Name is required');
+    }
+    
     if (!isAuthenticated) {
       throw new Error('User not authenticated');
     }
 
     try {
-      const updatedProfile = await supabaseService.updateUserProfile(name);
+      const updatedProfile = await supabaseService.updateUserProfile(name.trim());
       setProfile(updatedProfile);
       
       toast({
         title: "Mantap! 👍",
-        description: `Profil berhasil diupdate jadi "${name}"!`,
+        description: `Profil berhasil diupdate jadi "${name.trim()}"!`,
       });
     } catch (error) {
       console.error('Error updating user profile:', error);

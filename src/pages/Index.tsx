@@ -76,6 +76,15 @@ const Index = () => {
   };
 
   const handleAddIncome = async (incomeData: { month: string; month_name: string; salary: number }) => {
+    if (!incomeData.month || !incomeData.month_name || incomeData.salary <= 0) {
+      toast({
+        title: "Waduh! 😅",
+        description: "Data pendapatan tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const newIncome = await supabaseService.createIncome(incomeData);
       setIncomes(prev => [newIncome, ...prev]);
@@ -95,6 +104,15 @@ const Index = () => {
   };
 
   const handleAddExpense = async (expenseData: { month: string; month_name: string; expense_items: Array<{ label: string; amount: number }> }) => {
+    if (!expenseData.month || !expenseData.month_name || !expenseData.expense_items.length) {
+      toast({
+        title: "Waduh! 😅",
+        description: "Data pengeluaran tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       const total_expenses = expenseData.expense_items.reduce((sum, item) => sum + item.amount, 0);
       
@@ -132,6 +150,15 @@ const Index = () => {
   };
 
   const handleUpdateIncome = async (id: string, updates: Partial<Income>) => {
+    if (!id) {
+      toast({
+        title: "Error! 😔",
+        description: "ID pendapatan tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await supabaseService.updateIncome(id, updates);
       
@@ -154,6 +181,15 @@ const Index = () => {
   };
 
   const handleUpdateExpense = async (id: string, updates: Partial<Expense>, expenseItems?: Array<{ label: string; amount: number }>) => {
+    if (!id) {
+      toast({
+        title: "Error! 😔",
+        description: "ID pengeluaran tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await supabaseService.updateExpense(id, updates);
       
@@ -181,6 +217,15 @@ const Index = () => {
   };
 
   const handleDeleteIncome = async (id: string) => {
+    if (!id) {
+      toast({
+        title: "Error! 😔",
+        description: "ID pendapatan tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await supabaseService.deleteIncome(id);
       setIncomes(prev => prev.filter(income => income.id !== id));
@@ -200,6 +245,15 @@ const Index = () => {
   };
 
   const handleDeleteExpense = async (id: string) => {
+    if (!id) {
+      toast({
+        title: "Error! 😔",
+        description: "ID pengeluaran tidak valid!",
+        variant: "destructive"
+      });
+      return;
+    }
+
     try {
       await supabaseService.deleteExpense(id);
       setExpenses(prev => prev.filter(expense => expense.id !== id));

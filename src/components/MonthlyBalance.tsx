@@ -27,6 +27,10 @@ export interface MonthlyBalance {
 
 export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpense, onDeleteIncome, onDeleteExpense }: MonthlyBalanceProps) => {
   const monthlyBalances = useMemo(() => {
+    if (!incomes || !expenses) {
+      return [];
+    }
+
     const monthMap = new Map<string, MonthlyBalance>();
 
     // Initialize with incomes
@@ -46,14 +50,15 @@ export const MonthlyBalance = ({ incomes, expenses, onUpdateIncome, onUpdateExpe
     expenses.forEach(expense => {
       const existing = monthMap.get(expense.month);
       if (existing) {
-        const savings = (expense.expense_items || [])
+        const expenseItems = expense.expense_items || [];
+        const savings = expenseItems
           .filter(exp => exp.label.toLowerCase().includes('tabungan'))
           .reduce((sum, exp) => sum + exp.amount, 0);
         
         existing.totalExpenses = expense.total_expenses;
         existing.balance = existing.income - expense.total_expenses;
         existing.savings = savings;
-        existing.expenseDetails = expense.expense_items || [];
+        existing.expenseDetails = expenseItems;
       }
     });
 

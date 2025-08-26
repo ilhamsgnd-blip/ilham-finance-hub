@@ -44,6 +44,14 @@ export const EditIncomeDialog = ({ income, onUpdate }: EditIncomeDialogProps) =>
     e.preventDefault();
     
     const salaryNum = parseFloat(salary) || 0;
+    if (!salary || salaryNum <= 0) {
+      toast({
+        title: "Eh salah nih! 😅",
+        description: "Gaji harus diisi dan lebih dari 0 dong",
+        variant: "destructive"
+      });
+      return;
+    }
 
     const updatedIncome: MonthlyIncome = {
       ...income,
